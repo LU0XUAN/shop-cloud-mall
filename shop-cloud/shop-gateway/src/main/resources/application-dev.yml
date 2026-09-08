@@ -1,0 +1,54 @@
+server:
+  port: 8081
+
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    password:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          lowerCaseServiceId: true
+          enabled: true
+      routes:
+        - id: shop-auth
+          uri: lb://shop-auth
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1
+        - id: shop-goods
+          uri: lb://shop-goods
+          predicates:
+            - Path=/goods/**
+        - id: shop-user
+          uri: lb://shop-user
+          predicates:
+            - Path=/user/**
+        - id: shop-order
+          uri: lb://shop-order
+          predicates:
+            - Path=/order/**
+        - id: shop-logs
+          uri: lb://shop-logs
+          predicates:
+            - Path=/logs/**
+        - id: shop-file
+          uri: lb://shop-file
+          predicates:
+            - Path=/file/**
+          filters:
+            - StripPrefix=1
+
+security:
+  ignore:
+    whites:
+      - /auth/logout
+      - /auth/login
+      - /csrf
+      - /shop-goods/goods/getById/**
+      - /shop-goods/goods/getAll/**
+      - /shop-goods/goods/getType
+      - /file/**

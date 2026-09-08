@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单模块 (Order Module) 代码讲解</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #fff;
+            padding: 30px 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .nav {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+        }
+        .nav a {
+            text-decoration: none;
+            color: #495057;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .nav a:hover, .nav a.active {
+            background: #667eea;
+            color: #fff;
+        }
+        .content {
+            padding: 40px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 4px solid #667eea;
+        }
+        .section-subtitle {
+            font-size: 18px;
+            font-weight: 600;
+            color: #34495e;
+            margin: 20px 0 10px 0;
+        }
+        .card {
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .code-block .keyword { color: #569cd6; }
+        .code-block .string { color: #ce9178; }
+        .code-block .comment { color: #6a9955; }
+        .code-block .function { color: #dcdcaa; }
+        .code-block .class { color: #4ec9b0; }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .table th, .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-primary { background: #667eea; color: #fff; }
+        .badge-success { background: #10b981; color: #fff; }
+        .badge-warning { background: #f59e0b; color: #fff; }
+        .badge-danger { background: #ef4444; color: #fff; }
+        .badge-info { background: #3b82f6; color: #fff; }
+        .flowchart {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .flow-step {
+            background: #fff;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 15px 25px;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .flow-step .step-number {
+            background: #667eea;
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-weight: 700;
+        }
+        .flow-arrow {
+            font-size: 24px;
+            color: #667eea;
+            font-weight: bold;
+        }
+        .file-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .file-link:hover {
+            text-decoration: underline;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin: 15px 0;
+        }
+        .api-table td:first-child {
+            font-family: 'Consolas', monospace;
+            font-weight: 600;
+        }
+        .status-flow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        .status-item {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 10px 20px;
+            text-align: center;
+            min-width: 100px;
+        }
+        .status-item.active {
+            background: #667eea;
+            color: #fff;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛒 订单模块 (Order Module) 代码讲解</h1>
+            <p>基于 Spring Cloud 微服务架构的电商订单管理系统</p>
+        </div>
+        
+        <div class="nav">
+            <a href="#overview">模块概述</a>
+            <a href="#entity">实体类设计</a>
+            <a href="#mapper">数据访问层</a>
+            <a href="#service">业务逻辑层</a>
+            <a href="#controller">控制层与API</a>
+            <a href="#frontend">前端实现</a>
+            <a href="#workflow">核心流程</a>
+            <a href="#features">关键技术</a>
+        </div>
+
+        <div class="content">
+            <!-- 模块概述 -->
+            <section id="overview" class="section">
+                <h2 class="section-title">一、模块概述</h2>
+                <div class="card">
+                    <div class="card-title">📋 模块定位</div>
+                    <p style="line-height: 1.8;">订单模块是电商系统的核心业务模块之一，负责处理用户下单、订单状态流转、订单查询、销量统计等功能。该模块基于 <span class="badge badge-primary">Spring Cloud</span> 微服务架构，独立部署为 <code>shop-modules-order</code> 服务，通过 <span class="badge badge-info">Nacos</span> 进行服务注册与发现。</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">📁 模块结构</div>
+                    <div class="code-block">
+                        <pre>
+shop-modules-order/
+├── src/main/java/com/shop/order/
+│   ├── controller/           # 控制层 (API入口)
+│   │   └── OrderController.java
+│   ├── service/              # 业务逻辑层
+│   │   ├── SysOrderService.java
+│   │   └── impl/SysOrderServiceImpl.java
+│   ├── mapper/               # 数据访问层
+│   │   ├── SysOrderMapper.java
+│   │   └── SysCartMapper.java
+│   └── ShopOrderApplication.java  # 启动类
+├── src/main/resources/
+│   ├── mapper/               # MyBatis映射文件
+│   │   ├── SysOrderMapper.xml
+│   │   └── SysCartMapper.xml
+│   ├── application-dev.yml   # 开发环境配置
+│   ├── application.yaml      # 通用配置
+│   └── bootstrap.yml         # 启动配置
+└── pom.xml                   # Maven依赖配置</pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🛠️ 技术栈</div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <span class="badge badge-primary">Spring Boot 2.7.3</span>
+                        <span class="badge badge-success">Spring Cloud 2021.0.3</span>
+                        <span class="badge badge-info">MyBatis Plus 3.5.1</span>
+                        <span class="badge badge-warning">MySQL 8.0</span>
+                        <span class="badge badge-danger">Redis 6.x</span>
+                        <span class="badge badge-primary">Nacos 2.0.4</span>
+                        <span class="badge badge-success">Spring Cloud Gateway</span>
+                        <span class="badge badge-info">Lombok</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 实体类设计 -->
+            <section id="entity" class="section">
+                <h2 class="section-title">二、实体类设计</h2>
+                
+                <div class="section-subtitle">2.1 SysOrder（订单实体）</div>
+                <p style="margin-bottom: 15px;">订单实体对应数据库表 <code>sys_order</code>，存储订单的完整信息。</p>
+                
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>字段名</th>
+                            <th>类型</th>
+                            <th>含义</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>id</td><td>Integer</td><td>订单ID</td><td>自增主键</td></tr>
+                        <tr><td>pid</td><td>Integer</td><td>商品ID</td><td>关联商品表</td></tr>
+                        <tr><td>cid</td><td>Integer</td><td>购物车ID</td><td>非数据库字段，用于前端传递</td></tr>
+                        <tr><td>aid</td><td>Integer</td><td>收货地址ID</td><td>关联地址表</td></tr>
+                        <tr><td>numbers</td><td>String</td><td>订单号</td><td>格式：DD-时间戳-序号</td></tr>
+                        <tr><td>name</td><td>String</td><td>商品名称</td><td></td></tr>
+                        <tr><td>price</td><td>String</td><td>单价</td><td>BigDecimal转String存储</td></tr>
+                        <tr><td>sum</td><td>String</td><td>总价</td><td>原价总和</td></tr>
+                        <tr><td>discount</td><td>String</td><td>折扣金额</td><td>积分抵扣金额</td></tr>
+                        <tr><td>finalPrice</td><td>String</td><td>实付金额</td><td>sum - discount</td></tr>
+                        <tr><td>integral</td><td>String</td><td>获得积分</td><td>消费1元得1积分</td></tr>
+                        <tr><td>num</td><td>Integer</td><td>购买数量</td><td></td></tr>
+                        <tr><td>status</td><td>String</td><td>订单状态</td><td>0-已下单,1-已发货,2-已收货,3-退货中,4-已退货</td></tr>
+                        <tr><td>attr</td><td>String</td><td>商品属性</td><td>JSON格式存储</td></tr>
+                        <tr><td>type</td><td>String</td><td>商品类型</td><td></td></tr>
+                        <tr><td>environment</td><td>String</td><td>环保程度</td><td></td></tr>
+                        <tr><td>createBy</td><td>Long</td><td>创建人ID</td><td>自动填充</td></tr>
+                        <tr><td>createTime</td><td>Date</td><td>创建时间</td><td>自动填充</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="code-block">
+                    <pre><span class="keyword">package</span> com.shop.core.domain.entity;
+
+<span class="keyword">import</span> com.baomidou.mybatisplus.annotation.*;
+<span class="keyword">import</span> lombok.Data;
+
+<span class="keyword">@Data</span>
+<span class="keyword">@TableName</span>(value = <span class="string">"sys_order"</span>)
+<span class="keyword">public class</span> <span class="class">SysOrder</span> <span class="keyword">implements</span> Serializable {
+    <span class="keyword">private static final long</span> serialVersionUID = 1L;
+
+    <span class="comment">// 订单ID - 自增主键</span>
+    <span class="keyword">@TableId</span>(type = IdType.AUTO)
+    <span class="keyword">private</span> Integer id;
+
+    <span class="comment">// 商品ID</span>
+    <span class="keyword">private</span> Integer pid;
+
+    <span class="comment">// 购物车ID（非数据库字段）</span>
+    <span class="keyword">@TableField</span>(exist = <span class="keyword">false</span>)
+    <span class="keyword">private</span> Integer cid;
+
+    <span class="comment">// 地址ID</span>
+    <span class="keyword">private</span> Integer aid;
+
+    <span class="comment">// 订单号</span>
+    <span class="keyword">private</span> String numbers;
+
+    <span class="comment">// 商品名称</span>
+    <span class="keyword">private</span> String name;
+
+    <span class="comment">// 订单状态(0:已下单)</span>
+    <span class="keyword">private</span> String status;
+
+    <span class="comment">// 实付金额</span>
+    <span class="keyword">private</span> String finalPrice;
+
+    <span class="comment">// 创建人ID - 自动填充</span>
+    <span class="keyword">@TableField</span>(fill = FieldFill.INSERT)
+    <span class="keyword">private</span> Long createBy;
+    ...
+}</pre>
+                    </div>
+
+                <div class="section-subtitle">2.2 SysCart（购物车实体）</div>
+                <p style="margin-bottom: 15px;">购物车实体对应数据库表 <code>sys_cart</code>，存储用户购物车商品信息。下单时从购物车读取数据创建订单。</p>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>字段名</th>
+                            <th>类型</th>
+                            <th>含义</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>id</td><td>Integer</td><td>购物车ID</td></tr>
+                        <tr><td>pid</td><td>Integer</td><td>商品ID</td></tr>
+                        <tr><td>name</td><td>String</td><td>商品名称</td></tr>
+                        <tr><td>price</td><td>String</td><td>单价</td></tr>
+                        <tr><td>sum</td><td>String</td><td>总价</td></tr>
+                        <tr><td>num</td><td>Integer</td><td>数量</td></tr>
+                        <tr><td>attr</td><td>String</td><td>商品属性</td></tr>
+                        <tr><td>img</td><td>String</td><td>封面图</td></tr>
+                        <tr><td>type</td><td>String</td><td>商品类型</td></tr>
+                        <tr><td>createBy</td><td>Long</td><td>创建人ID</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 数据访问层 -->
+            <section id="mapper" class="section">
+                <h2 class="section-title">三、数据访问层（Mapper）</h2>
+                
+                <div class="card">
+                    <div class="card-title">3.1 SysOrderMapper</div>
+                    <p style="margin-bottom: 15px;">订单数据访问接口，继承 <code>BaseMapper</code> 获得基础CRUD能力。</p>
+                    <div class="code-block">
+                        <pre><span class="keyword">package</span> com.shop.order.mapper;
+
+<span class="keyword">import</span> com.baomidou.mybatisplus.core.mapper.BaseMapper;
+<span class="keyword">import</span> com.shop.core.domain.entity.SysOrder;
+<span class="keyword">import</span> org.apache.ibatis.annotations.Mapper;
+
+<span class="keyword">@Mapper</span>
+<span class="keyword">public interface</span> <span class="class">SysOrderMapper</span> <span class="keyword">extends</span> <span class="class">BaseMapper</span>&lt;SysOrder&gt; {
+    <span class="comment">// 继承BaseMapper，自动获得CRUD方法</span>
+}</pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">3.2 SysCartMapper</div>
+                    <p style="margin-bottom: 15px;">购物车数据访问接口，用于下单时查询购物车信息。</p>
+                    <div class="code-block">
+                        <pre><span class="keyword">package</span> com.shop.order.mapper;
+
+<span class="keyword">import</span> com.baomidou.mybatisplus.core.mapper.BaseMapper;
+<span class="keyword">import</span> com.shop.core.domain.entity.SysCart;
+<span class="keyword">import</span> org.apache.ibatis.annotations.Mapper;
+
+<span class="keyword">@Mapper</span>
+<span class="keyword">public interface</span> <span class="class">SysCartMapper</span> <span class="keyword">extends</span> <span class="class">BaseMapper</span>&lt;SysCart&gt; {
+}</pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">3.3 SysOrderMapper.xml</div>
+                    <p style="margin-bottom: 15px;">MyBatis映射文件，定义了订单表的字段映射关系。</p>
+                    <div class="code-block">
+                        <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"&gt;
+&lt;mapper namespace="com.shop.order.mapper.SysOrderMapper"&gt;
+    &lt;resultMap id="BaseResultMap" type="com.shop.core.domain.entity.SysOrder"&gt;
+        &lt;id property="id" column="id" jdbcType="INTEGER" /&gt;
+        &lt;result property="pid" column="pid" jdbcType="INTEGER" /&gt;
+        &lt;result property="numbers" column="numbers" jdbcType="VARCHAR" /&gt;
+        &lt;result property="finalPrice" column="<span class="string">final_price</span>" jdbcType="VARCHAR" /&gt;
+        &lt;result property="status" column="status" jdbcType="VARCHAR" /&gt;
+        ...
+    &lt;/resultMap&gt;
+    &lt;sql id="Base_Column_List"&gt;
+        id,pid,aid,numbers,name,price,status,sum,
+        discount,final_price,integral,...
+    &lt;/sql&gt;
+&lt;/mapper&gt;</pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 业务逻辑层 -->
+            <section id="service" class="section">
+                <h2 class="section-title">四、业务逻辑层（Service）</h2>
+                
+                <div class="card">
+                    <div class="card-title">4.1 SysOrderService（接口）</div>
+                    <div class="code-block">
+                        <pre><span class="keyword">package</span> com.shop.order.service;
+
+<span class="keyword">import</span> com.baomidou.mybatisplus.extension.service.IService;
+<span class="keyword">import</span> com.shop.core.domain.entity.SysOrder;
+
+<span class="keyword">public interface</span> <span class="class">SysOrderService</span> <span class="keyword">extends</span> <span class="class">IService</span>&lt;SysOrder&gt; {
+    <span class="comment">// 获取当前用户的订单列表</span>
+    List&lt;SysOrder&gt; getMyOrder(SysOrder item);
+}</pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">4.2 SysOrderServiceImpl（实现类）</div>
+                    <p style="margin-bottom: 15px;">实现了自定义的 <code>getMyOrder()</code> 方法，用于获取当前登录用户的订单列表。</p>
+                    <div class="code-block">
+                        <pre><span class="keyword">package</span> com.shop.order.service.impl;
+
+<span class="keyword">import</span> com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+<span class="keyword">import</span> com.shop.order.mapper.SysOrderMapper;
+<span class="keyword">import</span> com.shop.order.service.SysOrderService;
+<span class="keyword">import</span> com.shop.security.utils.SecurityUtils;
+
+<span class="keyword">@Service</span>
+<span class="keyword">public class</span> <span class="class">SysOrderServiceImpl</span> 
+    <span class="keyword">extends</span> <span class="class">ServiceImpl</span>&lt;SysOrderMapper, SysOrder&gt; 
+    <span class="keyword">implements</span> <span class="class">SysOrderService</span> {
+
+    <span class="keyword">@Override</span>
+    <span class="keyword">public</span> List&lt;SysOrder&gt; <span class="function">getMyOrder</span>(SysOrder item) {
+        <span class="comment">// 开启分页</span>
+        PageUtils.start();
+        
+        <span class="comment">// 使用LambdaQuery链式查询</span>
+        <span class="keyword">return</span> <span class="keyword">this</span>.lambdaQuery()
+            <span class="comment">// 按创建人ID筛选（当前登录用户）</span>
+            .eq(SysOrder::getCreateBy, SecurityUtils.getUserId())
+            <span class="comment">// 按商品名称模糊查询（条件可选）</span>
+            .like(item.getName() != <span class="keyword">null</span>, SysOrder::getName, item.getName())
+            <span class="comment">// 按状态筛选（条件可选）</span>
+            .eq(item.getStatus() != <span class="keyword">null</span>, SysOrder::getStatus, item.getStatus())
+            <span class="comment">// 按创建时间倒序</span>
+            .orderByDesc(SysOrder::getCreateTime)
+            .list();
+    }
+}</pre>
+                    </div>
+                    <div class="highlight">
+                        <strong>关键点：</strong><br>
+                        - <code>SecurityUtils.getUserId()</code>：从JWT Token中解析当前登录用户ID<br>
+                        - <code>lambdaQuery()</code>：MyBatis Plus的Lambda查询，类型安全<br>
+                        - <code>like(condition, field, value)</code>：条件查询，第一个参数为条件判断
+                    </div>
+                </div>
+            </section>
+
+            <!-- 控制层与API -->
+            <section id="controller" class="section">
+                <h2 class="section-title">五、控制层与API接口</h2>
+                
+                <div class="card">
+                    <div class="card-title">5.1 API接口汇总</div>
+                    <table class="table api-table">
+                        <thead>
+                            <tr>
+                                <th>HTTP方法</th>
+                                <th>接口路径</th>
+                                <th>功能描述</th>
+                                <th>认证要求</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>GET</td><td>/order/list</td><td>查询订单列表（管理员）</td><td>需要Token</td></tr>
+                            <tr><td>GET</td><td>/order/getMyOrder</td><td>获取我的订单（用户）</td><td>需要Token</td></tr>
+                            <tr><td>GET</td><td>/order/productStats</td><td>商品销量统计</td><td>需要Token</td></tr>
+                            <tr><td>POST</td><td>/order</td><td>新增订单</td><td>需要Token</td></tr>
+                            <tr><td>PUT</td><td>/order</td><td>修改订单</td><td>需要Token</td></tr>
+                            <tr><td>PUT</td><td>/order/editStatus</td><td>修改订单状态</td><td>需要Token</td></tr>
+                            <tr><td>DELETE</td><td>/order/{id}</td><td>删除订单</td><td>需要Token</td></tr>
+                            <tr><td>GET</td><td>/order/getById/{id}</td><td>根据ID获取订单</td><td>需要Token</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">5.2 核心API详解：新增订单</div>
+                    <p style="margin-bottom: 15px;">这是订单模块最核心的接口，实现了从购物车到订单的转换逻辑。</p>
+                    <div class="code-block">
+                        <pre><span class="keyword">@PostMapping</span>
+<span class="keyword">@Log</span>(describe = <span class="string">"新增订单"</span>)
+<span class="keyword">public</span> R&lt;?&gt; <span class="function">add</span>(
+    <span class="keyword">@RequestBody</span> List&lt;Map&lt;String, Object&gt;&gt; items,
+    <span class="keyword">@RequestParam</span>(required = <span class="keyword">false</span>) Boolean useIntegrals,
+    <span class="keyword">@RequestParam</span>(required = <span class="keyword">false</span>) Integer point) {
+    
+    <span class="comment">// 1. 获取当前登录用户ID</span>
+    Long userId = SecurityUtils.getUserId();
+    
+    <span class="comment">// 2. 生成订单号前缀（DD-时间戳-）</span>
+    String orderPrefix = <span class="string">"DD-"</span> + System.currentTimeMillis() + <span class="string">"-"</span>;
+    
+    <span class="comment">// 3. 遍历购物车商品列表</span>
+    <span class="keyword">for</span> (<span class="keyword">int</span> i = 0; i &lt; items.size(); i++) {
+        Map&lt;String, Object&gt; item = items.get(i);
+        Integer cid = toInteger(item.get(<span class="string">"cid"</span>));
+        Integer aid = toInteger(item.get(<span class="string">"aid"</span>));
+        
+        <span class="comment">// 4. 根据购物车ID查询购物车信息</span>
+        SysCart cart = cartMapper.selectById(cid);
+        <span class="keyword">if</span> (cart == <span class="keyword">null</span>) <span class="keyword">continue</span>;
+        
+        <span class="comment">// 5. 创建订单对象，复制购物车信息</span>
+        SysOrder order = <span class="keyword">new</span> SysOrder();
+        order.setCreateBy(userId);
+        order.setPid(cart.getPid());
+        order.setAid(aid);
+        order.setName(cart.getName());
+        order.setPrice(cart.getPrice());
+        order.setSum(cart.getSum());
+        order.setNum(cart.getNum());
+        ...
+        
+        <span class="comment">// 6. 生成唯一订单号</span>
+        String numbers = orderPrefix + (i + 1);
+        order.setNumbers(numbers);
+        order.setStatus(<span class="string">"0"</span>); <span class="comment">// 0:已下单</span>
+        
+        <span class="comment">// 7. 计算积分（消费1元得1积分）</span>
+        BigDecimal price = <span class="keyword">new</span> BigDecimal(finalPrice);
+        order.setIntegral(String.valueOf(price.intValue()));
+        
+        <span class="comment">// 8. 保存订单</span>
+        orderService.save(order);
+    }
+    <span class="keyword">return</span> R.ok();
+}</pre>
+                    </div>
+                    
+                    <div class="highlight">
+                        <strong>订单号生成规则：</strong><br>
+                        <code>DD-{时间戳}-{序号}</code><br>
+                        示例：<code>DD-1625097600000-1</code>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">5.3 核心API详解：商品销量统计</div>
+                    <p style="margin-bottom: 15px;">统计所有订单中各商品的销量，返回TOP10数据，用于图表展示。</p>
+                    <div class="code-block">
+                        <pre><span class="keyword">@GetMapping</span>(<span class="string">"/productStats"</span>)
+<span class="keyword">@Log</span>(describe = <span class="string">"商品销量统计"</span>)
+<span class="keyword">public</span> R&lt;?&gt; <span class="function">productStats</span>() {
+    <span class="comment">// 1. 查询所有订单</span>
+    List&lt;SysOrder&gt; allOrders = orderService.lambdaQuery().list();
+    
+    <span class="comment">// 2. 按商品名称分组统计销量</span>
+    Map&lt;String, Integer&gt; salesMap = <span class="keyword">new</span> HashMap&lt;&gt;();
+    <span class="keyword">for</span> (SysOrder order : allOrders) {
+        String name = order.getName();
+        Integer num = order.getNum();
+        salesMap.put(name, salesMap.getOrDefault(name, 0) + num);
+    }
+    
+    <span class="comment">// 3. 转换为EchartsVo格式</span>
+    List&lt;EchartsVo&gt; result = <span class="keyword">new</span> ArrayList&lt;&gt;();
+    <span class="keyword">for</span> (Map.Entry&lt;String, Integer&gt; entry : salesMap.entrySet()) {
+        EchartsVo vo = <span class="keyword">new</span> EchartsVo();
+        vo.setName(entry.getKey());
+        vo.setValue(entry.getValue());
+        result.add(vo);
+    }
+    
+    <span class="comment">// 4. 按销量排序，取前10</span>
+    result.sort((a, b) -&gt; b.getValue() - a.getValue());
+    <span class="keyword">if</span> (result.size() &gt; 10) {
+        result = result.subList(0, 10);
+    }
+    
+    <span class="keyword">return</span> R.ok(result);
+}</pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">5.4 核心API详解：修改订单状态</div>
+                    <p style="margin-bottom: 15px;">支持订单状态的流转操作。</p>
+                    <div class="code-block">
+                        <pre><span class="keyword">@PutMapping</span>(<span class="string">"/editStatus"</span>)
+<span class="keyword">@Log</span>(describe = <span class="string">"修改订单状态"</span>)
+<span class="keyword">public</span> R&lt;?&gt; <span class="function">editStatus</span>(<span class="keyword">@RequestBody</span> SysOrder item) {
+    SysOrder order = <span class="keyword">new</span> SysOrder();
+    order.setId(item.getId());
+    order.setStatus(item.getStatus());
+    <span class="keyword">return</span> R.ok(orderService.updateById(order));
+}</pre>
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
+                        <strong>订单状态流转：</strong>
+                        <div class="status-flow">
+                            <div class="status-item"><strong>0</strong><br>已下单</div>
+                            <span style="color: #667eea;">→</span>
+                            <div class="status-item"><strong>1</strong><br>已发货</div>
+                            <span style="color: #667eea;">→</span>
+                            <div class="status-item"><strong>2</strong><br>已收货</div>
+                            <span style="color: #667eea;">↘</span>
+                            <div class="status-item"><strong>3</strong><br>退货中</div>
+                            <span style="color: #667eea;">→</span>
+                            <div class="status-item"><strong>4</strong><br>已退货</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 前端实现 -->
+            <section id="frontend" class="section">
+                <h2 class="section-title">六、前端实现</h2>
+                
+                <div class="card">
+                    <div class="card-title">6.1 管理后台 - 订单管理页面</div>
+                    <p style="margin-bottom: 15px;">前端文件：<a href="file:///C:/Users/Administrator/Documents/trae_projects/shop-cloud/shop-admin/src/views/sys/order.vue" class="file-link">order.vue</a></p>
+                    
+                    <div class="section-subtitle">功能特点</div>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li><strong>订单列表展示</strong>：表格展示订单号、商品名称、价格、数量、状态等信息</li>
+                        <li><strong>条件查询</strong>：支持按商品名称模糊搜索</li>
+                        <li><strong>状态管理</strong>：下拉菜单切换订单状态（已发货/已收货/退货）</li>
+                        <li><strong>分页功能</strong>：支持分页查询</li>
+                        <li><strong>删除订单</strong>：二次确认后删除</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">6.2 前端API调用</div>
+                    <p style="margin-bottom: 15px;">前端通过封装的API方法调用后端接口：</p>
+                    <div class="code-block">
+                        <pre><span class="comment">// 获取订单列表</span>
+lists(query).then(res => {
+    list.value = res.data;
+    total.value = res.total;
+})
+
+<span class="comment">// 修改订单状态</span>
+editStatus({
+    id: row.id,
+    status: data  <span class="comment">// 1:已发货, 2:已收货, 3:退货</span>
+}).then(r => {
+    ElMessage.success(<span class="string">'操作成功'</span>);
+    row.status = data;
+})
+
+<span class="comment">// 删除订单</span>
+del(data.id).then(r => {
+    getlist();
+})</pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 核心流程 -->
+            <section id="workflow" class="section">
+                <h2 class="section-title">七、核心业务流程</h2>
+                
+                <div class="card">
+                    <div class="card-title">7.1 下单流程</div>
+                    <div class="flowchart">
+                        <div class="flow-step">
+                            <div class="step-number">1</div>
+                            <div>用户选择商品</div>
+                            <div style="font-size: 12px; color: #666;">加入购物车</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="step-number">2</div>
+                            <div>确认订单</div>
+                            <div style="font-size: 12px; color: #666;">选择地址/积分抵扣</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="step-number">3</div>
+                            <div>调用下单接口</div>
+                            <div style="font-size: 12px; color: #666;">POST /order</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="step-number">4</div>
+                            <div>后端处理</div>
+                            <div style="font-size: 12px; color: #666;">生成订单号/创建订单</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="step-number">5</div>
+                            <div>订单创建成功</div>
+                            <div style="font-size: 12px; color: #666;">状态: 已下单(0)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">7.2 订单状态流转流程</div>
+                    <div class="flowchart">
+                        <div class="flow-step">
+                            <div class="step-number">1</div>
+                            <div>已下单</div>
+                            <div style="font-size: 12px; color: #667eea;">status=0</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="step-number">2</div>
+                            <div>已发货</div>
+                            <div style="font-size: 12px; color: #10b981;">status=1</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="step-number">3</div>
+                            <div>已收货</div>
+                            <div style="font-size: 12px; color: #3b82f6;">status=2</div>
+                        </div>
+                        <div class="flow-arrow">↘</div>
+                        <div class="flow-step">
+                            <div class="step-number">4</div>
+                            <div>退货中</div>
+                            <div style="font-size: 12px; color: #f59e0b;">status=3</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="step-number">5</div>
+                            <div>已退货</div>
+                            <div style="font-size: 12px; color: #ef4444;">status=4</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 关键技术 -->
+            <section id="features" class="section">
+                <h2 class="section-title">八、关键技术与设计亮点</h2>
+                
+                <div class="card">
+                    <div class="card-title">8.1 MyBatis Plus Lambda查询</div>
+                    <p style="margin-bottom: 15px;">使用Lambda表达式进行类型安全的查询，避免字符串硬编码字段名。</p>
+                    <div class="code-block">
+                        <pre><span class="comment">// Lambda查询 - 类型安全</span>
+<span class="keyword">this</span>.lambdaQuery()
+    .eq(SysOrder::getCreateBy, userId)
+    .like(item.getName() != <span class="keyword">null</span>, SysOrder::getName, item.getName())
+    .orderByDesc(SysOrder::getCreateTime)
+    .list();
+
+<span class="comment">// 传统方式 - 容易出错</span>
+queryWrapper.eq(<span class="string">"create_by"</span>, userId)
+    .like(<span class="string">"name"</span>, item.getName());</pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">8.2 自动日志记录</div>
+                    <p style="margin-bottom: 15px;">使用自定义 <code>@Log</code> 注解 + AOP切面实现操作日志自动记录。</p>
+                    <div class="code-block">
+                        <pre><span class="comment">// 只需添加注解，自动记录操作日志</span>
+<span class="keyword">@PostMapping</span>
+<span class="keyword">@Log</span>(describe = <span class="string">"新增订单"</span>)
+<span class="keyword">public</span> R&lt;?&gt; <span class="function">add</span>(...) {
+    <span class="comment">// 业务逻辑...</span>
+}
+
+<span class="comment">// 自动记录：操作人、操作时间、操作描述、请求参数、执行时间等</span></pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">8.3 统一响应封装</div>
+                    <p style="margin-bottom: 15px;">使用 <code>R</code> 类统一封装API响应，前端可以统一处理。</p>
+                    <div class="code-block">
+                        <pre><span class="comment">// 成功响应</span>
+<span class="keyword">return</span> R.ok(data);
+<span class="comment">// {"code": 200, "msg": "success", "data": {...}, "total": 10}</span>
+
+<span class="comment">// 失败响应</span>
+<span class="keyword">return</span> R.fail(<span class="string">"操作失败"</span>);
+<span class="comment">// {"code": 500, "msg": "操作失败", "data": null}</span></pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">8.4 安全认证</div>
+                    <p style="margin-bottom: 15px;">通过JWT Token进行认证，<code>SecurityUtils.getUserId()</code> 从Token中解析用户ID。</p>
+                    <div class="highlight">
+                        <strong>认证流程：</strong><br>
+                        1. 用户登录获取JWT Token<br>
+                        2. 前端每次请求在Header中携带Token<br>
+                        3. Gateway网关拦截并验证Token<br>
+                        4. 后端通过 <code>SecurityUtils.getUserId()</code> 获取当前用户
+                    </div>
+                </div>
+            </section>
+
+            <!-- 总结 -->
+            <section class="section">
+                <h2 class="section-title">九、总结</h2>
+                <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff;">
+                    <div class="card-title" style="color: #fff;">订单模块核心要点</div>
+                    <ul style="margin-left: 20px; line-height: 2;">
+                        <li><strong>模块定位</strong>：处理电商订单的全生命周期管理</li>
+                        <li><strong>核心功能</strong>：订单创建、状态管理、查询统计</li>
+                        <li><strong>技术亮点</strong>：MyBatis Plus Lambda查询、自动日志、统一响应</li>
+                        <li><strong>安全机制</strong>：JWT认证 + Gateway统一拦截</li>
+                        <li><strong>微服务架构</strong>：独立部署、Nacos注册发现</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <div style="background: #f8f9fa; padding: 20px; text-align: center; color: #666; font-size: 14px;">
+            Shop-Cloud 电商商城系统 · 订单模块代码讲解
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,8 @@
+server:
+  port: 9204
+
+spring:
+  application:
+    name: shop-order
+  profiles:
+    active: dev

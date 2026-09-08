@@ -1,0 +1,18 @@
+server:
+  port: 9204
+
+spring:
+  application:
+    name: shop-order
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        namespace: d208ff0b-ac76-4257-8c5d-a78f16665e7e
+      config:
+        server-addr: 127.0.0.1:8848
+        file-extension: yml
+        namespace: d208ff0b-ac76-4257-8c5d-a78f16665e7e
+        group: DEFAULT_GROUP

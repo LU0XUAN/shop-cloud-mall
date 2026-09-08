@@ -1,0 +1,8 @@
+server:
+  port: 9205
+
+spring:
+  application:
+    name: shop-logs
+  profiles:
+    active: dev

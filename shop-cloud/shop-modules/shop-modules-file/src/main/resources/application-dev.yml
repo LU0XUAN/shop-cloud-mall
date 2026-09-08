@@ -1,0 +1,17 @@
+spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+file:
+  mac:
+    path: ~/file/
+    avatar: ~/avatar/
+  linux:
+    path: /home/your_username/file/
+    avatar: /home/your_username/avatar/
+  windows:
+    path: D:/your_username/file/
+    avatar: D:/your_username/avatar/
+maxSize: 100
+avatarMaxSize: 5

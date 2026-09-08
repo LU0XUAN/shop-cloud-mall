@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.order.mapper.SysOrderMapper">
+    <resultMap id="BaseResultMap" type="com.shop.core.domain.entity.SysOrder">
+        <id property="id" column="id" jdbcType="INTEGER" />
+        <result property="pid" column="pid" jdbcType="INTEGER" />
+        <result property="aid" column="aid" jdbcType="INTEGER" />
+        <result property="numbers" column="numbers" jdbcType="VARCHAR" />
+        <result property="name" column="name" jdbcType="VARCHAR" />
+        <result property="price" column="price" jdbcType="VARCHAR" />
+        <result property="status" column="status" jdbcType="VARCHAR" />
+        <result property="sum" column="sum" jdbcType="VARCHAR" />
+        <result property="discount" column="discount" jdbcType="VARCHAR" />
+        <result property="finalPrice" column="final_price" jdbcType="VARCHAR" />
+        <result property="integral" column="integral" jdbcType="VARCHAR" />
+        <result property="img" column="img" jdbcType="VARCHAR" />
+        <result property="imgs" column="imgs" jdbcType="VARCHAR" />
+        <result property="details" column="details" jdbcType="LONGVARCHAR" />
+        <result property="num" column="num" jdbcType="INTEGER" />
+        <result property="attr" column="attr" jdbcType="VARCHAR" />
+        <result property="type" column="type" jdbcType="VARCHAR" />
+        <result property="environment" column="environment" jdbcType="VARCHAR" />
+        <result property="createBy" column="create_by" jdbcType="BIGINT" />
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP" />
+        <result property="updateBy" column="update_by" jdbcType="BIGINT" />
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP" />
+        <result property="remarks" column="remarks" jdbcType="VARCHAR" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id,pid,aid,numbers,name,price,status,sum,discount,final_price,integral,
+        img,imgs,details,num,attr,type,environment,
+        create_by,create_time,update_by,update_time,remarks
+    </sql>
+</mapper>
